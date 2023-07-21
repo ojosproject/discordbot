@@ -1,5 +1,6 @@
 import discord
-from discord import Embed, app_commands
+from discord import app_commands
+from spotify_tools import SpotifyCache
 import os
 
 intents = discord.Intents.default()
@@ -20,34 +21,26 @@ SERVERS = {
 }
 
 
-def build_song_embed(song: discord.Spotify, listener: str) -> discord.Embed:
-    e = Embed(title=song.title, url=song.track_url)
-    e = e.set_image(url=song.album_cover_url)
-    e = e.add_field(name="Album", value=song.album)
-    e = e.add_field(name="Artist", value=str(song.artists)[1:-1].replace("'", ''))
-    e = e.add_field(name="Listened to by", value=listener, inline=False)
-    e = e.set_footer(text="ChaluBot", icon_url=client.user.display_avatar.url)
-    e.color = discord.Color.from_str("#FF9A62")
-
-    return e
-
 
 class ChaluBot(discord.Client):
     def __init__(self, *,intents: discord.Intents):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
-        self.SPOTIFY_CACHE = []
+
+        self._SPOTIFY_CACHE = SpotifyCache()
 
     async def on_ready(self):
+        self._SPOTIFY_CACHE.old_cache()
+
         await self.change_presence(status=discord.Status.online, activity=discord.Game("with my food"))
         print("Ready to go!")
 
     async def on_presence_update(self, _, after: discord.Member):
-        if after.guild.id == SERVERS['Goobers']['id'] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and after.activity.track_id not in self.SPOTIFY_CACHE:
+        if after.guild.id == SERVERS['Goobers']['id'] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id):
             # prevents repeats
-            self.SPOTIFY_CACHE.append(after.activity.track_id)
+            self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id)
 
-            await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[build_song_embed(after.activity, after.name)])
+            await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[self._SPOTIFY_CACHE.build_embed(after.activity, after, client)])
 
     async def setup_hook(self):
         for s, o in SERVERS.items():
