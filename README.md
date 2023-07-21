@@ -1,5 +1,7 @@
 # ChaluBot
 
+![Header of ChaluBot](.github/header.png)
+
 The ChaluBot Discord bot is designed to help calejvaldez with various tasks across different Discord servers.
 
 ## Tasks? Like what?
@@ -16,4 +18,4 @@ No idea.
 
 Inspired by my college roommate's pet, Chalupa!
 
-![Photo of Chalupa the guinea pig](.github/chalubot.jpg)
+![Photo of Chalupa the guinea pig](.github/chalupa.jpg)
