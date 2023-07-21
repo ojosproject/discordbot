@@ -45,7 +45,8 @@ class ChaluBot(discord.Client):
             self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id, after.id)
             
             for s in ('Goobers', 'Wine Moms'):
-                await self.get_channel(SERVERS[s]['spotify_channel_id']).send("", embeds=[self._SPOTIFY_CACHE.build_embed(after.activity, after, client)])
+                if after.guild.id == SERVERS[s]['id']:
+                    await self.get_channel(SERVERS[s]['spotify_channel_id']).send("", embeds=[self._SPOTIFY_CACHE.build_embed(after.activity, after, client)])
 
 
     async def setup_hook(self):
