@@ -19,22 +19,20 @@ SERVERS = {
     }
 }
 
-SPOTIFY_CACHE = []
-
 class ChaluBot(discord.Client):
     def __init__(self, *,intents: discord.Intents):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
+        self.SPOTIFY_CACHE = []
 
     async def on_ready(self):
         await self.change_presence(status=discord.Status.online, activity=discord.Game("with my food"))
         print("Ready to go!")
 
     async def on_presence_update(self, before: discord.Member, after: discord.Member):
-        global SPOTIFY_CACHE
         if before.guild.id == SERVERS['Goobers']['id'] and after.activity and after.activity.name == 'Spotify':
             after.activity: discord.Spotify
-            if after.activity.track_id not in SPOTIFY_CACHE:
+            if after.activity.track_id not in self.SPOTIFY_CACHE:
                 e = Embed(title=after.activity.title, url=after.activity.track_url)
                 e = e.set_image(url=after.activity.album_cover_url)
                 e = e.add_field(name="Album", value=after.activity.album)
@@ -44,7 +42,7 @@ class ChaluBot(discord.Client):
                 e.color = discord.Color.from_str("#FF9A62")
 
                 # prevents repeats
-                SPOTIFY_CACHE.append(after.activity.track_id)
+                self.SPOTIFY_CACHE.append(after.activity.track_id)
 
                 await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[e])
 
