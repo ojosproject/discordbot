@@ -43,7 +43,7 @@ class ChaluBot(discord.Client):
 
     async def on_presence_update(self, _, after: discord.Member):
         if after.guild.id in (SERVERS['Goobers']['id'], SERVERS['Wine Moms']['id']) and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
-            self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id, after.id)
+            self._SPOTIFY_CACHE.add_to_cache(after.activity, after)
 
             for g in filter(lambda s: s['spotify_channel_id'], SERVERS.values()):
                 if after in self.get_guild(g['id']).members:

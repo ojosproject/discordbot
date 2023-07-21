@@ -52,8 +52,9 @@ class SpotifyCache:
     def in_cache(self, track_id: str, user_id: int) -> bool:
         return hash((track_id, user_id)) in self._cache
     
-    def add_to_cache(self, track_id: str, user_id: int) -> None:
-        self._cache.append(hash((track_id, user_id)))
+    def add_to_cache(self, track: discord.Spotify, member: discord.Member) -> None:
+        SpotifyRecords().add_to_record(track, member)
+        self._cache.append(hash((track.track_id, member.id)))
 
     @staticmethod
     def build_embed(track: discord.Spotify, member: discord.Member, client: discord.Client) -> discord.Embed:
@@ -64,7 +65,5 @@ class SpotifyCache:
         e = e.add_field(name="Listened to by", value=member.name, inline=False)
         e = e.set_footer(text="ChaluBot", icon_url=client.user.display_avatar.url)
         e.color = discord.Color.from_str("#FF9A62")
-
-        SpotifyRecords().add_to_record(track, member)
 
         return e
