@@ -1,5 +1,6 @@
 import discord
 from discord import Embed, app_commands
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -31,7 +32,7 @@ class ChaluBot(discord.Client):
 
     async def on_presence_update(self, before: discord.Member, after: discord.Member):
         global SPOTIFY_CACHE
-        if before.guild.id == SERVERS['ChaluBot Developers']['id'] and after.activity and after.activity.name == 'Spotify':
+        if before.guild.id == SERVERS['Goobers']['id'] and after.activity and after.activity.name == 'Spotify':
             after.activity: discord.Spotify
             if after.activity.track_id not in SPOTIFY_CACHE:
                 e = Embed(title=after.activity.title, url=after.activity.track_url)
@@ -45,7 +46,7 @@ class ChaluBot(discord.Client):
                 # prevents repeats
                 SPOTIFY_CACHE.append(after.activity.track_id)
 
-                await self.get_channel(SERVERS['ChaluBot Developers']['spotify_channel_id']).send("", embeds=[e])
+                await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[e])
 
     async def setup_hook(self):
         for s, o in SERVERS.items():
@@ -54,3 +55,4 @@ class ChaluBot(discord.Client):
 
 
 client = ChaluBot(intents=intents)
+client.run(os.getenv("BOT_TOKEN"))
