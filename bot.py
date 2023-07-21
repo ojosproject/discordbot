@@ -17,6 +17,11 @@ SERVERS = {
         "id": 1109362324386615336,
         "object": discord.Object(id=1109362324386615336),
         "spotify_channel_id": 1131861175550873621
+    },
+    "Wine Moms": {
+        "id": 1131973022207725660,
+        "object": discord.Object(id=1131973022207725660),
+        "spotify_channel_id": 1131973048229187716
     }
 }
 
@@ -36,11 +41,12 @@ class ChaluBot(discord.Client):
         print("Ready to go!")
 
     async def on_presence_update(self, _, after: discord.Member):
-        if after.guild.id == SERVERS['Goobers']['id'] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
-            # prevents repeats
+        if after.guild.id in (SERVERS['Goobers']['id'], SERVERS['Wine Moms']['id']) and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
             self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id, after.id)
+            
+            for s in ('Goobers', 'Wine Moms'):
+                await self.get_channel(SERVERS[s]['spotify_channel_id']).send("", embeds=self._SPOTIFY_CACHE.build_embed(after.activity, after, client))
 
-            await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[self._SPOTIFY_CACHE.build_embed(after.activity, after, client)])
 
     async def setup_hook(self):
         for s, o in SERVERS.items():
