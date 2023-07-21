@@ -36,9 +36,9 @@ class ChaluBot(discord.Client):
         print("Ready to go!")
 
     async def on_presence_update(self, _, after: discord.Member):
-        if after.guild.id == SERVERS['Goobers']['id'] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id):
+        if after.guild.id == SERVERS['Goobers']['id'] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
             # prevents repeats
-            self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id)
+            self._SPOTIFY_CACHE.add_to_cache(after.activity.track_id, after.id)
 
             await self.get_channel(SERVERS['Goobers']['spotify_channel_id']).send("", embeds=[self._SPOTIFY_CACHE.build_embed(after.activity, after, client)])
 

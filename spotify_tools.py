@@ -35,11 +35,11 @@ class SpotifyRecords:
         with open(self._path, 'r') as f:
             self._records = json.loads(f.read())
 
-    def get_records_for_cache(self) -> list[str]:
+    def get_records_for_cache(self) -> list:
         if not self._records:
             self._read_records()
         
-        return [x['track_id'] for x in self._records['records']]
+        return [hash((x['track_id'], x['discord_user_id'])) for x in self._records['records']]
 
 
 class SpotifyCache:
@@ -49,11 +49,11 @@ class SpotifyCache:
     def old_cache(self) -> None:
         self._cache += SpotifyRecords().get_records_for_cache()
 
-    def in_cache(self, track_id: str) -> bool:
-        return track_id in self._cache
+    def in_cache(self, track_id: str, user_id: int) -> bool:
+        return hash((track_id, user_id)) in self._cache
     
-    def add_to_cache(self, track_id: str) -> None:
-        self._cache.append(track_id)
+    def add_to_cache(self, track_id: str, user_id: int) -> None:
+        self._cache.append(hash((track_id, user_id)))
 
     @staticmethod
     def build_embed(track: discord.Spotify, member: discord.Member, client: discord.Client) -> discord.Embed:
