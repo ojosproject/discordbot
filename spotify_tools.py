@@ -4,6 +4,15 @@ import time
 from pathlib import Path
 
 
+def get_spotify_activity(member: discord.Member) -> discord.Spotify | None:
+    """
+    If a member is streaming a track on Spotify, it returns the Activity. Does not include song files from their local device.
+    """
+    for activity in member.activities:
+        if isinstance(activity, discord.Spotify) and activity.track_id:
+            return activity
+
+
 class SpotifyRecords:
     def __init__(self):
         self._path = Path("./spotify_records.json")

@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from spotify_tools import SpotifyCache
+from spotify_tools import SpotifyCache, get_spotify_activity
 import os
 import json
 
@@ -27,13 +27,15 @@ class ChaluBot(discord.Client):
         print("Ready to go!")
 
     async def on_presence_update(self, _, after: discord.Member):
+        activity = get_spotify_activity(after)
+        if not activity:
+            return
+        
         with_spotify = [server for server in SERVERS.values() if server['features']['spotify']]
-        if after.guild.id in [server['id'] for server in with_spotify] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
+        if after.guild.id in [server['id'] for server in with_spotify] and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
             self._SPOTIFY_CACHE.add_to_cache(after.activity, after)
 
-            for g in with_spotify:
-                if after in self.get_guild(g['id']).members:
-                    await self.get_channel(g['spotify_channel_id']).send("", embeds=[SpotifyCache.build_embed(after.activity, after, client)])
+            [await self.get_channel(g['spotify_channel_id']).send("", embeds=[SpotifyCache.build_embed(after.activity, after, client)]) for g in with_spotify if after in self.get_guild(g['id']).members]
 
 
     async def setup_hook(self):
