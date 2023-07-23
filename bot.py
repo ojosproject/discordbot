@@ -45,5 +45,26 @@ class ChaluBot(discord.Client):
                 print(f"Updated {s} commands.")
 
 
+# Commands begin below.
 client = ChaluBot(intents=intents)
+
+def has_command(command_name: str, server_data: dict) -> bool:
+    return server_data['features']['commands'] and command_name in server_data['features']['commands']
+
+
+@client.tree.command(name="purge",
+                     description="A classic purge command! 50 messages at a time.",
+                     guilds=[discord.Object(id=server['id']) for server in SERVERS.values() if has_command('purge', server)])
+async def purge(interaction: discord.Interaction):
+    try:
+        follow_up = interaction.channel.id
+        await interaction.response.send_message(f"Working...")
+        await interaction.channel.purge(limit=50)
+        await client.get_channel(follow_up).send(f"Messages deleted! (Did I miss some? If I wasn't awake when it was sent, I cannot find it...)", delete_after=5)
+    except discord.Forbidden:
+        await interaction.response.send_message("Sorry, but you don't have the `Manage Messages` permission.", delete_after=10)
+    except discord.HTTPException:
+        await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
+
+
 client.run(os.getenv("DEV_BOT_TOKEN"))
