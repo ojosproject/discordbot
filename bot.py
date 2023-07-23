@@ -10,8 +10,7 @@ intents.presences = True
 intents.members = True
 
 with open('server_data.json', 'r') as file:
-    SERVERS = json.loads(file.read())
-
+    SERVERS: dict = json.loads(file.read())
 
 
 class ChaluBot(discord.Client):
@@ -28,17 +27,18 @@ class ChaluBot(discord.Client):
         print("Ready to go!")
 
     async def on_presence_update(self, _, after: discord.Member):
-        if after.guild.id in (SERVERS['Goobers']['id'], SERVERS['Wine Moms']['id']) and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
+        with_spotify = [server for server in SERVERS.values() if server['features']['spotify']]
+        if after.guild.id in [server['id'] for server in with_spotify] and isinstance(after.activity, discord.Spotify) and after.activity.track_id and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
             self._SPOTIFY_CACHE.add_to_cache(after.activity, after)
 
-            for g in filter(lambda s: s['spotify_channel_id'], SERVERS.values()):
+            for g in with_spotify:
                 if after in self.get_guild(g['id']).members:
                     await self.get_channel(g['spotify_channel_id']).send("", embeds=[SpotifyCache.build_embed(after.activity, after, client)])
 
 
     async def setup_hook(self):
         for s, o in SERVERS.items():
-            if o['has_commands']:
+            if o['features']['commands']:
                 await self.tree.sync(guild=discord.Object(id=o['id']))
                 print(f"Updated {s} commands.")
 
