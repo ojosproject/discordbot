@@ -39,7 +39,7 @@ class ChaluBot(discord.Client):
     async def setup_hook(self):
         for s, o in SERVERS.items():
             if o['has_commands']:
-                await self.tree.sync(guild=o['object'])
+                await self.tree.sync(guild=discord.Object(id=o['id']))
                 print(f"Updated {s} commands.")
 
 
