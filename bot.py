@@ -67,4 +67,32 @@ async def purge(interaction: discord.Interaction):
         await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
 
 
+@client.tree.command(name="archive",
+                     description="Archives the CURRENT CHANNEL and creates a new one for the week!",
+                     guilds=[discord.Object(id=server['id']) for server in SERVERS.values() if has_command('archive', server)])
+@app_commands.describe(
+    channel_name="What's the theme for this week?",
+    nickname_for_isabella="Isabella's nickname!",
+    nickname_for_carlos="Nickname for Carlos!"
+)
+async def archive(interaction: discord.Interaction, channel_name: str, nickname_for_isabella: str, nickname_for_carlos: str):
+    data = SERVERS['Wine Moms']
+    wendy: discord.CategoryChannel = interaction.guild.get_channel(data['channel_ids']['wendy'])
+    archive_category: discord.CategoryChannel = interaction.guild.get_channel(data['channel_ids']['archive'])
+
+    if interaction.channel not in wendy.channels:
+        await interaction.response.send_message(f"Sorry, but this channel isn't in `{wendy.name}`. Please try a channel from that category instead!", ephemeral=True, delete_after=15)
+        return
+
+    await interaction.channel.move(category=archive_category, end=True) # moves to archive
+    new_channel = await wendy.create_text_channel(channel_name) # creates new channel
+
+    carlos = interaction.guild.get_member(data['user_ids']['carlos'])
+    await interaction.guild.get_member(data['user_ids']['isabella']).edit(nick=nickname_for_isabella) # changes isabella nickname
+
+    await new_channel.send(f"Welcome to the new theme for this week: {channel_name}! :sparkles:")
+    await new_channel.send(f"I am not allowed to edit {carlos.mention}'s name, but his new nickname is `{nickname_for_carlos}`!")
+    await new_channel.send("Have fun!! :orange_heart:")
+    await interaction.response.send_message(f"Done! This channel is now archived. Please use {new_channel.mention} instead. Thank you! :orange_heart:")
+
 client.run(os.getenv("DEV_BOT_TOKEN"))
