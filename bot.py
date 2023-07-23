@@ -2,29 +2,15 @@ import discord
 from discord import app_commands
 from spotify_tools import SpotifyCache
 import os
+import json
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.presences = True
 intents.members = True
 
-SERVERS = {
-    'ChaluBot Developers': {
-        'id': 1131618409382158366,
-        'object': discord.Object(id=1131618409382158366),
-        'spotify_channel_id': None
-    },
-    "Goobers": {
-        "id": 1109362324386615336,
-        "object": discord.Object(id=1109362324386615336),
-        "spotify_channel_id": 1131861175550873621
-    },
-    "Wine Moms": {
-        "id": 1131973022207725660,
-        "object": discord.Object(id=1131973022207725660),
-        "spotify_channel_id": 1131973048229187716
-    }
-}
+with open('server_data.json', 'r') as file:
+    SERVERS = json.loads(file.read())
 
 
 
@@ -52,8 +38,9 @@ class ChaluBot(discord.Client):
 
     async def setup_hook(self):
         for s, o in SERVERS.items():
-            await self.tree.sync(guild=o['object'])
-            print(f"Updated {s} commands.")
+            if o['has_commands']:
+                await self.tree.sync(guild=o['object'])
+                print(f"Updated {s} commands.")
 
 
 client = ChaluBot(intents=intents)
