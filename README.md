@@ -8,7 +8,7 @@ The ChaluBot Discord bot is designed to help calejvaldez with various tasks acro
 
 Reminders, referencing important documents, making Spotify playlists, etc. Things that I don't personally want to stay on top of. c:
 
-## Why the public repo?
+## Why is the repository public?
 
 In case people think ChaluBot is tracking more info than necessary. No, it doesn't keep your messages. No, it doesn't spy on you. No, it isn't gonna take over the world. It's made to do stuff I'm too lazy to keep track of. ChaluBot is actually in love with you.
 
