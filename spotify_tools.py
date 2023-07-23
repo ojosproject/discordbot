@@ -1,7 +1,10 @@
 import discord
-import json
 import time
+import sqlite3
 from pathlib import Path
+from collections import namedtuple
+
+RawSpotifyRecord = namedtuple('RawSpotifyRecord', ['discord_user_id', 'spotify_track_id', 'ts'])
 
 
 def get_spotify_activity(member: discord.Member) -> discord.Spotify | None:
@@ -15,40 +18,19 @@ def get_spotify_activity(member: discord.Member) -> discord.Spotify | None:
 
 class SpotifyRecords:
     def __init__(self):
-        self._path = Path("./data/spotify_records.json")
-        self._records = None
+        self._path = Path("./data/ChaluBotDB.db")
 
     def add_to_record(self, track: discord.Spotify, member: discord.Member) -> None:
-        if not self._records:
-            self._read_records()
+        with sqlite3.connect(self._path) as con:
+            con.execute("INSERT INTO SpotifyRecords (discord_user_id, spotify_track_id, ts) VALUES(?, ?, ?);", (str(member.id), track.track_id, str(time.time())))
 
-        self._records['records'].append({
-            'discord_user_id': member.id,
-            'track_id': track.track_id,
-            'timestamp': time.time()
-        })
-
-        with open(self._path, 'w+') as f:
-            f.write(json.dumps(self._records, indent=4))
-        
-        self._read_records()
-
-    def _read_records(self) -> None:
-        if not self._path.exists():
-            self._records = {'records': []}
-
-            with open(self._path, 'w+') as f:
-                f.write(json.dumps(self._records, indent=4))
-        
-        
-        with open(self._path, 'r') as f:
-            self._records = json.loads(f.read())
+    def _read_records(self) -> list[RawSpotifyRecord]:
+        with sqlite3.connect("./data/ChaluBotDB.db") as con:
+            cursor = con.execute("SELECT * FROM SpotifyRecords;")
+            return [RawSpotifyRecord(int(row[0]), row[1], float(row[2])) for row in cursor.fetchall()]
 
     def get_records_for_cache(self) -> list:
-        if not self._records:
-            self._read_records()
-        
-        return [hash((x['track_id'], x['discord_user_id'])) for x in self._records['records']]
+        return [hash((record.spotify_track_id, record.discord_user_id)) for record in self._read_records()]
 
 
 class SpotifyCache:

@@ -4,3 +4,5 @@ prod.py
 *.json
 prepare_production.py
 prod
+*.db
+*.sql
