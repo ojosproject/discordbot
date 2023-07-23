@@ -44,4 +44,4 @@ class ChaluBot(discord.Client):
 
 
 client = ChaluBot(intents=intents)
-client.run(os.getenv("BOT_TOKEN"))
+client.run(os.getenv("DEV_BOT_TOKEN"))
