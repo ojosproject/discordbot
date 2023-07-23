@@ -12,10 +12,6 @@ Reminders, referencing important documents, making Spotify playlists, etc. Thing
 
 In case people think ChaluBot is tracking more info than necessary. No, it doesn't keep your messages. No, it doesn't spy on you. No, it isn't gonna take over the world. It's made to do stuff I'm too lazy to keep track of. ChaluBot is actually in love with you.
 
-## When will it be released?
-
-No idea.
-
 Inspired by my college roommate's pet, Chalupa!
 
 ![Photo of Chalupa the guinea pig](.github/chalupa.jpg)
