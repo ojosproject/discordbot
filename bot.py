@@ -32,10 +32,10 @@ class ChaluBot(discord.Client):
             return
         
         with_spotify = [server for server in SERVERS.values() if server['features']['spotify']]
-        if after.guild.id in [server['id'] for server in with_spotify] and not self._SPOTIFY_CACHE.in_cache(after.activity.track_id, after.id):
-            self._SPOTIFY_CACHE.add_to_cache(after.activity, after)
+        if after.guild.id in [server['id'] for server in with_spotify] and not self._SPOTIFY_CACHE.in_cache(activity.track_id, after.id):
+            self._SPOTIFY_CACHE.add_to_cache(activity, after)
 
-            [await self.get_channel(g['spotify_channel_id']).send("", embeds=[SpotifyCache.build_embed(after.activity, after, client)]) for g in with_spotify if after in self.get_guild(g['id']).members]
+            [await self.get_channel(g['spotify_channel_id']).send("", embeds=[SpotifyCache.build_embed(activity, after, client)]) for g in with_spotify if after in self.get_guild(g['id']).members]
 
 
     async def setup_hook(self):
