@@ -9,7 +9,7 @@ intents.message_content = True
 intents.presences = True
 intents.members = True
 
-with open('server_data.json', 'r') as file:
+with open('./data/server_data.json', 'r') as file:
     SERVERS: dict = json.loads(file.read())
 
 

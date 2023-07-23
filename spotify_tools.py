@@ -15,7 +15,7 @@ def get_spotify_activity(member: discord.Member) -> discord.Spotify | None:
 
 class SpotifyRecords:
     def __init__(self):
-        self._path = Path("./spotify_records.json")
+        self._path = Path("./data/spotify_records.json")
         self._records = None
 
     def add_to_record(self, track: discord.Spotify, member: discord.Member) -> None:
