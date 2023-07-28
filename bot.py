@@ -14,7 +14,7 @@ with open('./data/server_data.json', 'r') as file:
 
 
 class ChaluBot(discord.Client):
-    def __init__(self, *,intents: discord.Intents):
+    def __init__(self, *, intents: discord.Intents):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
 
@@ -37,7 +37,6 @@ class ChaluBot(discord.Client):
 
             [await self.get_channel(g['channel_ids']['spotify']).send("", embeds=[SpotifyCache.build_embed(activity, after, client)]) for g in with_spotify if after in self.get_guild(g['id']).members]
 
-
     async def setup_hook(self):
         for s, o in SERVERS.items():
             if o['features']['commands']:
@@ -47,6 +46,7 @@ class ChaluBot(discord.Client):
 
 # Commands begin below.
 client = ChaluBot(intents=intents)
+
 
 def has_command(command_name: str, server_data: dict) -> bool:
     return server_data['features']['commands'] and command_name in server_data['features']['commands']
