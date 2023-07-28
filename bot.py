@@ -1,5 +1,4 @@
 import discord
-import datetime
 from discord import app_commands
 from spotify_tools import SpotifyCache, get_spotify_activity
 from data_tools import JSONData
@@ -40,7 +39,8 @@ class ChaluBot(discord.Client):
             [await self.get_channel(server_data['channel_ids']['spotify']).send("", embeds=[SpotifyCache.build_embed(activity, after, client)]) for guild_id, server_data in spotify_servers.items() if after in self.get_guild(guild_id).members]
 
     async def setup_hook(self):
-        for guild_id in DATA.get_server_data(with_feature='commands').keys():
+        for guild_id, server_data in DATA.get_server_data(with_feature='commands').items():
+            print(f"Updated {server_data['nick']} commands.")
             await self.tree.sync(guild=discord.Object(id=guild_id))
 
 
