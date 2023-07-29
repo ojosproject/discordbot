@@ -39,7 +39,7 @@ class JSONData:
 
             if server_id:
                 assert not with_feature, "DataStorage.get_server_data: not with_feature to get individual server data."
-                return all_data[int(server_id)]
+                return all_data[str(server_id)]
             else:
                 if with_feature:
                     if ":" in with_feature:
