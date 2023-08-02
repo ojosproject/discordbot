@@ -1,4 +1,5 @@
 import discord
+import datetime
 from discord import app_commands
 from spotify_tools import SpotifyCache, get_spotify_activity
 from data_tools import JSONData
@@ -94,5 +95,33 @@ async def archive(interaction: discord.Interaction, channel_name: str, nickname_
     await new_channel.send(f"I am not allowed to edit {carlos.mention}'s name, but his new nickname is `{nickname_for_carlos}`!")
     await new_channel.send("Have fun!! :orange_heart:")
     await interaction.response.send_message(f"Done! This channel is now archived. Please use {new_channel.mention} instead. Thank you! :orange_heart:")
+
+
+@client.tree.command(name="set",
+                     description="Set the event for Game Night! Only Carlos or Joseph can activate this.",
+                     guilds=[discord.Object(id=guild_id) for guild_id in DATA.get_server_data(with_feature='commands:set').keys()])
+async def set(interaction: discord.Interaction):
+    guild_id, server_data = DATA.get_server_data(1134495510573621338).items()
+
+    if interaction.user.id not in (890992783689670679, 458773298961055758):
+        await interaction.response.send_message("Sorry, you cannot use this command. Only Carlos or Joseph can use it.", ephemeral=True)
+
+    dt = datetime.datetime.today()
+    
+    while dt.weekday() != 4:
+        dt = dt + datetime.timedelta(days=1.0)
+
+    event = await client.get_guild(guild_id).create_scheduled_event(
+            name="Game Night",
+            description="Join us in our (not so weekly) game night!",
+            location=server_data['event_location'],
+            start_time=datetime.datetime(year=dt.year, month=dt.month, day=dt.day+1, hour=3, tzinfo=datetime.UTC),
+            end_time=datetime.datetime(dt.year, dt.month, dt.day+1, hour=7, tzinfo=datetime.UTC),
+            entity_type=discord.EntityType.external,
+            privacy_level=discord.PrivacyLevel.guild_only
+        )
+    
+    await interaction.response.send_message(f"`{event.name}` has been created and scheduled for `{event.start_time.month}/{event.start_time.day-1}/{event.start_time.year}`!")
+    
 
 client.run(DATA.get_token())

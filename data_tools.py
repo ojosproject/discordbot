@@ -59,16 +59,17 @@ class JSONData:
             return os.getenv("DEV_BOT_TOKEN")
         
     def _beta_data(self, prod_data: dict) -> dict:
-        beta_data = {DEVELOPER_SERVER_ID: prod_data[str(DEVELOPER_SERVER_ID)]}
+        dsid = str(DEVELOPER_SERVER_ID)
+        beta_data = {dsid: prod_data[dsid]}
         if ":" in self._test_feature:
             assert self._test_feature.count(":") == 1, "DataStorage._beta_data: Specific feature lookup must only have one :."
             _, command = self._test_feature.split(":")
-            beta_data[DEVELOPER_SERVER_ID]['features']['commands'] = [command]
+            beta_data[dsid]['features']['commands'] = [command]
         else:
-            beta_data[DEVELOPER_SERVER_ID]['features'][self._test_feature] = True
+            beta_data[dsid]['features'][self._test_feature] = True
 
         if self._append_to_beta:
-            beta_data[DEVELOPER_SERVER_ID].update(self._append_to_beta)
+            beta_data[dsid].update(self._append_to_beta)
 
 
         return beta_data
