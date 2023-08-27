@@ -1,18 +1,11 @@
 import json
 import os
-import discord
-import sqlite3
-import time
 from pathlib import Path
-from collections import namedtuple
 
 
 LAUNCH_FILE = Path("./.vscode/launch.json")
 SERVER_DATA_FILE = Path("./data/server_data.json")
-CHALUBOTDB_FILE = Path("./data/ChaluBotDB.db")
 DEVELOPER_SERVER_ID = 1131618409382158366
-
-RawSpotifyRecord = namedtuple('RawSpotifyRecord', ['discord_user_id', 'spotify_track_id', 'ts'])
 
 
 class JSONData:
@@ -76,21 +69,3 @@ class JSONData:
     
     def in_beta(self) -> bool:
         return not self._prod
-
-
-
-class SpotifyDB:
-    def __init__(self):
-        self._path = CHALUBOTDB_FILE
-
-    def add_to_record(self, track: discord.Spotify, member: discord.Member) -> None:
-        with sqlite3.connect(self._path) as con:
-            con.execute("INSERT INTO SpotifyRecords (discord_user_id, spotify_track_id, ts) VALUES(?, ?, ?);", (str(member.id), track.track_id, str(time.time())))
-
-    def _read_records(self) -> list[RawSpotifyRecord]:
-        with sqlite3.connect(self._path) as con:
-            cursor = con.execute("SELECT * FROM SpotifyRecords;")
-            return [RawSpotifyRecord(int(row[0]), row[1], float(row[2])) for row in cursor.fetchall()]
-
-    def get_records_for_cache(self) -> list:
-        return [hash((record.spotify_track_id, record.discord_user_id)) for record in self._read_records()]
