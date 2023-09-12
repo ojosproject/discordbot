@@ -78,6 +78,12 @@ async def set(interaction: discord.Interaction):
         )
     
     await interaction.response.send_message(f"`{event.name}` has been created and scheduled for `{event.start_time.month}/{event.start_time.day-1}/{event.start_time.year}`!")
+
+@client.tree.command(name="ticket",
+                     description="Want to report a bug or request a feature? Use this command!",
+                     guilds=[discord.Object(id=1128184237535805442)])
+async def new_issue(intraction: discord.Interaction):
+    ...
     
 
 client.run(DATA.get_token())
