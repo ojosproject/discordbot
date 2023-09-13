@@ -48,13 +48,16 @@ async def view_issues(interaction: discord.Interaction):
                        request="What feature/bug fix would you like?",
                        page="What page should this feature/bug fix be on?",
                        deadline="Please specify a deadline for this feature/bug fix to be done.")
-async def new_issue(interaction: discord.Interaction, label: Literal["bug", "feature"], request: str, page: Literal["/about/", "/showcase/", "/our-team/", "All pages"], deadline: str):
+async def new_issue(interaction: discord.Interaction, label: Literal["bug", "feature"], request: str, page: Literal["All pages", "New page", "/about/", "/showcase/", "/our-team/"], deadline: str):
     if interaction.user.id not in REGISTERED_EMPLOYEES:
         return await interaction.response.send_message("⚠️ Sorry, you're not registered to use this command.", ephemeral=True)
 
     requester = REGISTERED_EMPLOYEES[interaction.user.id]
-    body = f"> 🤖✌️ This was submitted using the [ChaluBot Discord bot](https://github.com/blackswan3dprinting/ChaluBot)!\n\n## What feature/bug fix would you like?\n{request}\n\n## What page should this feature/bug fix be on?\n`{page}`\n\n## Please specify a deadline for this feature/bug fix to be done.\n{deadline}\n\n## Requested by\n{requester}"
     label = label if label != "feature" else "enhancement"
+    page_format = f"`{page}`" if "/" in page else page
+
+    body = f"> 🤖✌️ This was submitted using the [ChaluBot Discord bot](https://github.com/blackswan3dprinting/ChaluBot)!\n\n## What feature/bug fix would you like?\n{request}\n\n## What page should this feature/bug fix be on?\n`{page_format}`\n\n## Please specify a deadline for this feature/bug fix to be done.\n{deadline}\n\n## Requested by\n{requester}"
+    
 
     
     response = requests.post("https://api.github.com/repos/blackswan3dprinting/blackswan3d.com/issues",
