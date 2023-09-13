@@ -9,7 +9,7 @@ intents.presences = True
 intents.members = True
 
 
-BS3D_GUID_ID = 1128184237535805442
+BS3D_GUILD_ID = 1128184237535805442
 
 REGISTERED_EMPLOYEES = {
     890992783689670679: "@Electric108",
@@ -94,7 +94,7 @@ class ChaluBot(discord.Client):
         print("Ready to go!")
 
     async def setup_hook(self):
-        await self.tree.sync(guild=discord.Object(id=BS3D_GUID_ID))
+        await self.tree.sync(guild=discord.Object(id=BS3D_GUILD_ID))
 
 
 # Commands begin below.
@@ -102,13 +102,13 @@ client = ChaluBot(intents=intents)
 
 @client.tree.command(name="issues",
                      description="View all issues that have been opened on GitHub.",
-                     guilds=[discord.Object(id=BS3D_GUID_ID)])
+                     guilds=[discord.Object(id=BS3D_GUILD_ID)])
 async def view_issues(interaction: discord.Interaction):
     return await interaction.response.send_message("You can view all active issues [on GitHub](https://github.com/blackswan3dprinting/blackswan3d.com/issues).", ephemeral=True)
 
 @client.tree.command(name="ticket",
                      description="Want to report a bug or request a feature? Use this command!",
-                     guilds=[discord.Object(id=BS3D_GUID_ID)])
+                     guilds=[discord.Object(id=BS3D_GUILD_ID)])
 async def new_issue(interaction: discord.Interaction):
     if interaction.user.id not in REGISTERED_EMPLOYEES:
         return await interaction.response.send_message("⚠️ Sorry, you're not registered to use this command.", ephemeral=True)
