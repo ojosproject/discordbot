@@ -2,6 +2,7 @@ import discord
 import requests
 import os
 from discord import app_commands
+from PKManager import generate_token
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -50,7 +51,7 @@ class SubmitIssue(discord.ui.Modal):
         
         response = requests.post("https://api.github.com/repos/blackswan3dprinting/blackswan3d.com/issues",
                                     headers={"Accept": "application/vnd.github+json",
-                                        "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}",
+                                        "Authorization": f"Bearer {generate_token()}",
                                         "X-GitHub-Api-Version": "2022-11-28"},
                                     json={"title": self.feature.value,
                                         "body": body,
