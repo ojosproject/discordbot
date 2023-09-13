@@ -56,7 +56,7 @@ async def new_issue(interaction: discord.Interaction, label: Literal["bug", "fea
     label = label if label != "feature" else "enhancement"
     page_format = f"`{page}`" if "/" in page else page
 
-    body = f"> 🤖✌️ This was submitted using the [ChaluBot Discord bot](https://github.com/blackswan3dprinting/ChaluBot)!\n\n## What feature/bug fix would you like?\n{request}\n\n## What page should this feature/bug fix be on?\n`{page_format}`\n\n## Please specify a deadline for this feature/bug fix to be done.\n{deadline}\n\n## Requested by\n{requester}"
+    body = f"> 🤖✌️ This was submitted using the [ChaluBot Discord bot](https://github.com/blackswan3dprinting/ChaluBot)!\n\n## What feature/bug fix would you like?\n{request}\n\n## What page should this feature/bug fix be on?\n{page_format}\n\n## Please specify a deadline for this feature/bug fix to be done.\n{deadline}\n\n## Requested by\n{requester}"
     
 
     
