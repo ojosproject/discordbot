@@ -1,4 +1,5 @@
 import discord
+import requests
 from discord import app_commands
 from typing import Literal
 
@@ -9,6 +10,11 @@ intents.members = True
 
 
 BS3D_GUID_ID = 1128184237535805442
+REGISTERED_EMPLOYEES = {
+    890992783689670679: "@Electric108",
+    995196107506319510: "Isaiah S.",
+    458773298961055758: "@calejvaldez"
+}
 
 
 class ChaluBot(discord.Client):
@@ -28,6 +34,12 @@ class ChaluBot(discord.Client):
 # Commands begin below.
 client = ChaluBot(intents=intents)
 
+@client.tree.command(name="issues",
+                     description="View all issues that have been opened on GitHub.",
+                     guilds=[discord.Object(id=BS3D_GUID_ID)])
+async def view_issues(interaction: discord.Interaction):
+    return await interaction.response.send_message("You can view all active issues [on GitHub](https://github.com/blackswan3dprinting/blackswan3d.com/issues).", ephemeral=True)
+
 @client.tree.command(name="ticket",
                      description="Want to report a bug or request a feature? Use this command!",
                      guilds=[discord.Object(id=BS3D_GUID_ID)])
@@ -35,8 +47,28 @@ client = ChaluBot(intents=intents)
                        request="What feature/bug fix would you like?",
                        page="What page should this feature/bug fix be on?",
                        deadline="Please specify a deadline for this feature/bug fix to be done.")
-async def new_issue(intraction: discord.Interaction, label: Literal["bug", "feature"], request: str, page: Literal["/about/", "/showcase/", "/our-team/", "All pages"], deadline: str):
-    ...
-    
+async def new_issue(interaction: discord.Interaction, label: Literal["bug", "feature"], request: str, page: Literal["/about/", "/showcase/", "/our-team/", "All pages"], deadline: str):
+    if interaction.user.id not in REGISTERED_EMPLOYEES:
+        return await interaction.response.send_message("⚠️ Sorry, you're not registered to use this command.", ephemeral=True)
 
-client.run("")
+    requester = REGISTERED_EMPLOYEES[interaction.user.id]
+    body = f"> 🤖✌️ This was submitted using the [ChaluBot Discord bot](https://github.com/blackswan3dprinting/ChaluBot)!\n\n## What feature/bug fix would you like?\n{request}\n\n## What page should this feature/bug fix be on?\n`{page}`\n\n## Please specify a deadline for this feature/bug fix to be done.\n{deadline}\n\n## Requested by\n{requester}"
+    label = label if label != "feature" else "enhancement"
+
+    
+    response = requests.post("https://api.github.com/repos/blackswan3dprinting/blackswan3d.com/issues",
+                                headers={"Accept": "application/vnd.github+json",
+                                    "Authorization": "Bearer token",
+                                    "X-GitHub-Api-Version": "2022-11-28"},
+                                json={"title": request,
+                                    "body": body,
+                                    "labels": [label],
+                                    "assignees": ["calejvaldez"]})
+
+    if response.status_code != 201:
+        return await interaction.response.send_message(f"❌ Something seems to have gone wrong when using `/ticket`. Here's an error for {client.get_user(458773298961055758).mention}:\n\n```\n{response.text}\n```")
+
+    response = response.json()
+    return await interaction.response.send_message(f"✅ [Your issue]({response['html_url']}) has been successfully submitted. Thanks!", ephemeral=True)
+
+client.run("token")
