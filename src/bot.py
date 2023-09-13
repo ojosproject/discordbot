@@ -1,5 +1,6 @@
 import discord
 import requests
+import os
 from discord import app_commands
 from typing import Literal
 
@@ -58,7 +59,7 @@ async def new_issue(interaction: discord.Interaction, label: Literal["bug", "fea
     
     response = requests.post("https://api.github.com/repos/blackswan3dprinting/blackswan3d.com/issues",
                                 headers={"Accept": "application/vnd.github+json",
-                                    "Authorization": "Bearer token",
+                                    "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}",
                                     "X-GitHub-Api-Version": "2022-11-28"},
                                 json={"title": request,
                                     "body": body,
@@ -71,4 +72,4 @@ async def new_issue(interaction: discord.Interaction, label: Literal["bug", "fea
     response = response.json()
     return await interaction.response.send_message(f"✅ [Your issue]({response['html_url']}) has been successfully submitted. Thanks!", ephemeral=True)
 
-client.run("token")
+client.run(os.getenv("DISCORD_TOKEN"))
