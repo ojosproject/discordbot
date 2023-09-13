@@ -10,6 +10,7 @@ intents.members = True
 
 
 BS3D_GUID_ID = 1128184237535805442
+
 REGISTERED_EMPLOYEES = {
     890992783689670679: "@Electric108",
     995196107506319510: "Isaiah S.",
@@ -30,7 +31,7 @@ class SubmitIssue(discord.ui.Modal):
 
     page = discord.ui.TextInput(
         label="What page should this feature/bug fix be on?",
-        placeholder="Do you want a new page? Or is this in a specific URL?",
+        placeholder="New page? URL?",
         row=1
     )
 
@@ -112,6 +113,6 @@ async def new_issue(interaction: discord.Interaction):
     if interaction.user.id not in REGISTERED_EMPLOYEES:
         return await interaction.response.send_message("⚠️ Sorry, you're not registered to use this command.", ephemeral=True)
     
-    await interaction.response.send_message(content="", view=DropdownView())
+    await interaction.response.send_message(content="", view=DropdownView(), ephemeral=True)
 
 client.run(os.getenv("DISCORD_TOKEN"))
