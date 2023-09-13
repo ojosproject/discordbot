@@ -1,7 +1,3 @@
-.vscode
 .idea
 __pycache__
-*.json
-*.db
-*.sql
 .env
