@@ -1,4 +1,4 @@
-# ChaluBot
+# Selene
 
 ![Selene logo header](.github/header.png)
 
