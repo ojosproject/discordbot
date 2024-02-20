@@ -4,11 +4,11 @@
 
 Sauron is a Discord bot for the Ojos Project to organize ourselves. The name
 "Sauron" is chosen based on the
-[Lord of the Rings character](https://en.wikipedia.org/wiki/Sauron).
+[Lord of the Rings character](https://en.wikipedia.org/wiki/Sauron#Eye_of_Sauron).
 
 ## Developer Guide
 
-Install the project dependenceis my using this command:
+Install the project dependenceis by using this command:
 
 ```shell
 pip install -r requirements.txt
