@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 from pathlib import Path
-from data import Data, FileNotAvailableError
+from data import Data, FileNotAvailableError, ReadingNotFoundError, DuplicateReadingError, MissingAssigneeError, MissingNotesError
 
 class TestDataClass(unittest.TestCase):
     def setUp(self):
@@ -93,13 +93,13 @@ class TestDataClass(unittest.TestCase):
     def test_cannot_add_data_without_assignee(self):
         self.d.add_reading('Welcome', 'https://ojosproject.org')
 
-        self.assertRaises(AssertionError, self.d.add_notes_and_summary, *('https://ojosproject.org', '# notes', 'summary'))
+        self.assertRaises(MissingAssigneeError, self.d.add_notes_and_summary, *('https://ojosproject.org', '# notes', 'summary'))
 
     def test_cannot_use_git_without_notes(self):
         self.d.add_reading('Welcome', 'https://ojosproject.org')
         self.d.assign_reading('https://ojosproject.org', 458773298961055758)
 
-        self.assertRaises(AssertionError, self.d.git, 'https://ojosproject.org')
+        self.assertRaises(MissingNotesError, self.d.git, 'https://ojosproject.org')
 
     def test_commit(self):
         self.d.add_reading('Welcome', 'https://ojosproject.org')
@@ -133,6 +133,13 @@ class TestDataClass(unittest.TestCase):
                     ]
                 }
             )
+
+    def test_same_reading_twice(self):
+        self.d.add_reading("Whoa", "https://ojosproject.org")
+        self.assertRaises(DuplicateReadingError, self.d.add_reading, *("W", "https://ojosproject.org"))
+
+    def test_reading_not_found_error(self):
+        self.assertRaises(ReadingNotFoundError, self.d.add_notes_and_summary, *('https://ojosproject.org', '# notes', 'summary'))
 
 
 if __name__ == "__main__":

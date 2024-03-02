@@ -10,6 +10,18 @@ from pathlib import Path
 class FileNotAvailableError(Exception):
     ...
 
+class ReadingNotFoundError(Exception):
+    ...
+
+class DuplicateReadingError(Exception):
+    ...
+
+class MissingAssigneeError(Exception):
+    ...
+
+class MissingNotesError(Exception):
+    ...
+
 class Data:
     _file: Path
     _content: dict
@@ -32,7 +44,8 @@ class Data:
         return -1
 
     def add_reading(self, title: str, url: str) -> None:
-        assert self._readings_already_included(url) == -1, 'Data.add_reading: The reading is already included.'
+        if self._readings_already_included(url) != -1:
+            raise DuplicateReadingError('Data.add_reading: The reading is already included.')
 
         self._content['readings'].append(
             {
@@ -50,7 +63,7 @@ class Data:
         reading_index = self._readings_already_included(url)
         
         if reading_index == -1:
-            raise Exception("Reading does not exist.")
+            raise ReadingNotFoundError("Reading does not exist.")
 
         self._content['readings'][reading_index].update({
             "assigned_to": user_id
@@ -60,9 +73,10 @@ class Data:
         reading_index = self._readings_already_included(url)
 
         if reading_index == -1:
-            raise Exception("Reading does not exist.")
+            raise ReadingNotFoundError("Reading does not exist.")
 
-        assert self._content['readings'][reading_index]['assigned_to'] != 0, 'Data.add_notes_and_summary: Cannot add content without assigned user.'
+        if self._content['readings'][reading_index]['assigned_to'] == 0:
+            raise MissingAssigneeError('Data.add_notes_and_summary: Cannot add content without assigned user.')
         
         self._content['readings'][reading_index].update({
             "notes": notes,
@@ -75,7 +89,8 @@ class Data:
         data = self._content['readings'][reading_index]
         author_data = list(filter(lambda team_member: team_member['id'] == data['assigned_to'], self._content['team']))[0]
 
-        assert data['notes'] != "" and data['summary'] != "", "Cannot commit without both notes and summary."
+        if data['notes'] == "" or data['summary'] == "":
+            raise MissingNotesError("Cannot commit without both notes and summary.")
 
         data['submitted'] = True
         self.commit()
