@@ -6,6 +6,7 @@ import discord
 import os
 from data import Data, DuplicateReadingError, MissingNotesError, ReadingNotFoundError
 from discord import app_commands
+from pathlib import Path
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -21,6 +22,8 @@ OJOS_TEAM_ID = 1204179952099139604
 
 class Sauron(discord.Client):
     def __init__(self, *, intents: discord.Intents):
+        assert Path("data.json").exists(), "ChaluBot.__init__: The `data.json` file cannot be found."
+
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
         self.data = Data("data.json")
