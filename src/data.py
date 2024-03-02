@@ -10,10 +10,10 @@ from pathlib import Path
 class FileNotAvailableError(Exception):
     ...
 
-class ReadingNotFoundError(Exception):
+class PaperNotFoundError(Exception):
     ...
 
-class DuplicateReadingError(Exception):
+class DuplicatePaperError(Exception):
     ...
 
 class MissingAssigneeError(Exception):
@@ -24,7 +24,7 @@ class MissingNotesError(Exception):
 
 class Data:
     _file: Path
-    _content: dict
+    _db: dict
 
     def __init__(self, file: str):
         """Initiates the Data class
@@ -39,45 +39,45 @@ class Data:
             raise FileNotAvailableError("Data.__init__: The file was not found on the server.")
     
         self._file: Path = Path(file)
-        self._content = json.loads(self._file.read_text())
+        self._db = json.loads(self._file.read_text())
 
     def commit(self) -> None:
         """
-        Saves the information in self._content to the self._file file.
+        Saves the information in self._db to the self._file file.
         """
         with open(self._file, 'w+') as f:
-            f.write(json.dumps(self._content, indent=4))
+            f.write(json.dumps(self._db, indent=4))
 
-    def _readings_already_included(self, url: str) -> int:
-        """Checks whether or not this is a duplicate reading with its URL.
+    def _papers_already_included(self, url: str) -> int:
+        """Checks whether or not this is a duplicate paper with its URL.
 
         Args:
             url (str): The URL to search for
 
         Returns:
-            int: Returns the index of the reading if it's included, -1 otherwise
+            int: Returns the index of the paper if it's included, -1 otherwise
         """
-        for index, reading in enumerate(self._content['readings']):
-            if reading['url'] == url:
+        for index, paper in enumerate(self._db['papers']):
+            if paper['url'] == url:
                 return index
         return -1
 
-    def add_reading(self, title: str, url: str) -> None:
-        """Adds a reading to self._content
+    def add_paper(self, title: str, url: str) -> None:
+        """Adds a paper to self._db
 
         Args:
             title (str): The title of the paper
             url (str): The URL of the paper
 
         Raises:
-            DuplicateReadingError: The reading is already included in self._content
+            DuplicatePaperError: The paper is already included in self._db
         """
-        if self._readings_already_included(url) != -1:
-            raise DuplicateReadingError('Data.add_reading: The reading is already included.')
+        if self._papers_already_included(url) != -1:
+            raise DuplicatePaperError('Data.add_paper: The paper is already included.')
 
-        self._content['readings'].append(
+        self._db['papers'].append(
             {
-                "id": len(self._content['readings']),
+                "id": len(self._db['papers']),
                 "title": title,
                 "url": url,
                 "assigned_to": 0,
@@ -87,22 +87,22 @@ class Data:
             }
         )
 
-    def assign_reading(self, url: str, user_id: int) -> None:
+    def assign_paper(self, url: str, user_id: int) -> None:
         """Assigns a paper to an individual.
 
         Args:
             url (str): The URL that's waiting to be assigned
-            user_id (int): A Discord user ID to assign the reading to
+            user_id (int): A Discord user ID to assign the paper to
 
         Raises:
-            ReadingNotFoundError: Raised if the URL is not in the system.
+            PaperNotFoundError: Raised if the URL is not in the system.
         """
-        reading_index = self._readings_already_included(url)
+        reading_index = self._papers_already_included(url)
         
         if reading_index == -1:
-            raise ReadingNotFoundError("Reading does not exist.")
+            raise PaperNotFoundError("Paper does not exist.")
 
-        self._content['readings'][reading_index].update({
+        self._db['papers'][reading_index].update({
             "assigned_to": user_id
         })
 
@@ -115,18 +115,18 @@ class Data:
             summary (str): A summary of the paper itself
 
         Raises:
-            ReadingNotFoundError: Raised when the URL is not in the system
+            PaperNotFoundError: Raised when the URL is not in the system
             MissingAssigneeError: Raised when the referenced paper does not have an assignee
         """
-        reading_index = self._readings_already_included(url)
+        reading_index = self._papers_already_included(url)
 
         if reading_index == -1:
-            raise ReadingNotFoundError("Reading does not exist.")
+            raise PaperNotFoundError("Reading does not exist.")
 
-        if self._content['readings'][reading_index]['assigned_to'] == 0:
+        if self._db['papers'][reading_index]['assigned_to'] == 0:
             raise MissingAssigneeError('Data.add_notes_and_summary: Cannot add content without assigned user.')
         
-        self._content['readings'][reading_index].update({
+        self._db['papers'][reading_index].update({
             "notes": notes,
             "summary": summary
         })
@@ -140,10 +140,10 @@ class Data:
         Raises:
             MissingNotesError: Raised if the paper does not have notes or a summary
         """
-        reading_index = self._readings_already_included(url)
+        reading_index = self._papers_already_included(url)
 
-        data = self._content['readings'][reading_index]
-        author_data = list(filter(lambda team_member: team_member['id'] == data['assigned_to'], self._content['team']))[0]
+        data = self._db['papers'][reading_index]
+        author_data = list(filter(lambda team_member: team_member['id'] == data['assigned_to'], self._db['team']))[0]
 
         if data['notes'] == "" or data['summary'] == "":
             raise MissingNotesError("Cannot commit without both notes and summary.")
@@ -161,17 +161,17 @@ class Data:
                     .replace("{NAME}", author_data['name'])
                     .replace("{EMAIL}", author_data['email']))
             
-    def get_content(self) -> dict:
+    def get_db(self) -> dict:
         """Returns a copy of the data.
 
         Returns:
             dict: A copy of the data.
         """
-        return dict(self._content)
+        return dict(self._db)
     
     def get_paper(self, paper_id: int) -> dict:
-        for paper in self._content['readings']:
+        for paper in self._db['papers']:
             if paper['id'] == paper_id:
                 return paper
             
-        raise ReadingNotFoundError
+        raise PaperNotFoundError
