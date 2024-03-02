@@ -77,7 +77,7 @@ class Data:
 
         self._content['readings'].append(
             {
-                "id": int(time.time()),
+                "id": len(self._content['readings']),
                 "title": title,
                 "url": url,
                 "assigned_to": 0,
@@ -160,3 +160,18 @@ class Data:
                     .replace("{ID}", str(data['id']))
                     .replace("{NAME}", author_data['name'])
                     .replace("{EMAIL}", author_data['email']))
+            
+    def get_content(self) -> dict:
+        """Returns a copy of the data.
+
+        Returns:
+            dict: A copy of the data.
+        """
+        return dict(self._content)
+    
+    def get_paper(self, paper_id: int) -> dict:
+        for paper in self._content['readings']:
+            if paper['id'] == paper_id:
+                return paper
+            
+        raise ReadingNotFoundError
