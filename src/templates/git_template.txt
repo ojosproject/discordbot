@@ -1,5 +1,5 @@
 ---BEGIN COMMIT INSTRUCTIONS---
-git add teams/research/work/{ID}.md
+git add docs/teams/research/work/{ID}.md
 git commit --author "{NAME} <{EMAIL}>"
 ---END COMMIT INSTRUCTIONS---
 
