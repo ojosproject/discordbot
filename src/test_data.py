@@ -21,7 +21,11 @@ class TestDataClass(unittest.TestCase):
                     }
                 )
             )
+
         self.d = Data("fake_data.json")
+
+    def tearDown(self):
+        os.remove("fake_data.json")
 
     def test_error_on_non_existent_file(self):
         self.assertRaises(FileNotAvailableError, Data, "does_not_exit.jpeg")
