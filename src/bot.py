@@ -59,7 +59,7 @@ async def add(interaction: discord.Interaction, title: str, url: str):
 @client.tree.command(name="list",
                     description="View all the research papers we've looked into so far.",
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
-async def list_papers(interaction: discord.Integration):
+async def list_papers(interaction: discord.Interaction):
     data = client.data.get_content()
 
     try:
