@@ -20,7 +20,7 @@ RESEARCH_TEAM_ID = 1204340599403323442
 OJOS_TEAM_ID = 1204179952099139604
 
 
-class Sauron(discord.Client):
+class Bot(discord.Client):
     def __init__(self, *, intents: discord.Intents):
         assert Path("data.json").exists(), "ChaluBot.__init__: The `data.json` file cannot be found."
 
@@ -76,7 +76,7 @@ class Notes(discord.ui.Modal):
 
 
 # Commands begin below.
-client = Sauron(intents=intents)
+client = Bot(intents=intents)
 
 @client.tree.command(name="add_paper",
                     description="Add a research paper for later",
