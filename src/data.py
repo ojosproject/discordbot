@@ -59,7 +59,7 @@ class Data:
             }
         )
 
-    def assign_reading(self, url: str, user_id: int | None) -> None:
+    def assign_reading(self, url: str, user_id: int) -> None:
         reading_index = self._readings_already_included(url)
         
         if reading_index == -1:
@@ -69,7 +69,7 @@ class Data:
             "assigned_to": user_id
         })
 
-    def add_notes_and_summary(self, url, notes, summary) -> None:
+    def add_notes_and_summary(self, url: str, notes: str, summary: str) -> None:
         reading_index = self._readings_already_included(url)
 
         if reading_index == -1:
@@ -83,7 +83,7 @@ class Data:
             "summary": summary
         })
 
-    def git(self, url) -> None:
+    def git(self, url: str) -> None:
         reading_index = self._readings_already_included(url)
 
         data = self._content['readings'][reading_index]
