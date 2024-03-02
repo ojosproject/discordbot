@@ -71,7 +71,7 @@ class TestDataClass(unittest.TestCase):
 
         with open(f"{test_content['id']}.txt", 'r') as f:
             self.assertEqual(
-                f"---BEGIN COMMIT INSTRUCTIONS---\ngit add teams/research/work/{test_content['id']}.md\ngit commit --author \"Carlos Valdez <cvaldezh@uci.edu>\"\n---END COMMIT INSTRUCTIONS---\n\n---BEGIN COMMIT MESSAGE---\nfeat(research/work): added new research\n\nAdded notes for {test_content['title']}.\n\n\nCo-authored-by: Carlos Valdez <cvaldezh@uci.edu>\n---END COMMIT MESSAGE---",
+                f"---BEGIN COMMIT INSTRUCTIONS---\ngit add docs/teams/research/work/{test_content['id']}.md\ngit commit --author \"Carlos Valdez <cvaldezh@uci.edu>\"\n---END COMMIT INSTRUCTIONS---\n\n---BEGIN COMMIT MESSAGE---\nfeat(research/work): added new research\n\nAdded notes for {test_content['title']}.\n\n---END COMMIT MESSAGE---\n",
                 f.read()
             )
         

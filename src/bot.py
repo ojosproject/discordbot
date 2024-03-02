@@ -212,7 +212,7 @@ async def commit(interaction: discord.Interaction, paper_id: int):
                 paper['url']
             )
 
-            await interaction.response.send_message(f"Your notes will be published soon once ${interaction.guild.get_member(CARLOS_ID).mention} gets on the computer. Thank you, ${interaction.user.mention}!")
+            await interaction.response.send_message(f"Your notes will be published soon once {interaction.guild.get_member(CARLOS_ID).mention} gets on the computer. Thank you, {interaction.user.mention}!")
         else:
             await interaction.response.send_message(":x: Sorry, but you're not assigned to this paper.", ephemeral=True, delete_after=10)
     except MissingNotesError:
