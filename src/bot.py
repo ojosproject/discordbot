@@ -4,8 +4,9 @@
 # A Discord bot designed to help organize the Research team.
 import discord
 import os
-from data import Data, DuplicateReadingError, MissingNotesError, ReadingNotFoundError
+from data import Data, DuplicatePaperError, MissingNotesError, PaperNotFoundError
 from discord import app_commands
+from pathlib import Path
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -19,8 +20,10 @@ RESEARCH_TEAM_ID = 1204340599403323442
 OJOS_TEAM_ID = 1204179952099139604
 
 
-class Sauron(discord.Client):
+class Bot(discord.Client):
     def __init__(self, *, intents: discord.Intents):
+        assert Path("data.json").exists(), "ChaluBot.__init__: The `data.json` file cannot be found."
+
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
         self.data = Data("data.json")
@@ -73,7 +76,7 @@ class Notes(discord.ui.Modal):
 
 
 # Commands begin below.
-client = Sauron(intents=intents)
+client = Bot(intents=intents)
 
 @client.tree.command(name="add_paper",
                     description="Add a research paper for later",
@@ -85,12 +88,12 @@ client = Sauron(intents=intents)
 async def add_paper(interaction: discord.Interaction, title: str, url: str):
     try:
         if OJOS_TEAM_ID in [x.id for x in interaction.user.roles]:
-            client.data.add_reading(title, url)
+            client.data.add_paper(title, url)
             client.data.commit()
             await interaction.response.send_message(f":white_check_mark: Done! Added [{title}]({url}). If you'd like to claim this reading, please use `/claim`!")
         else:
             await interaction.response.send_message(":x: Sorry, but you're not authorized to use this command.", ephemeral=True, delete_after=10)
-    except DuplicateReadingError:
+    except DuplicatePaperError:
         await interaction.response.send_message(":x: Sorry, this article is already registered.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
         await interaction.response.send_message(":question: Sorry, I had an unexpected error...")
@@ -100,7 +103,7 @@ async def add_paper(interaction: discord.Interaction, title: str, url: str):
                     description="View all the research papers we've looked into so far.",
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
 async def list_papers(interaction: discord.Interaction):
-    data = client.data.get_content()
+    data = client.data.get_db()
 
     try:
         embed = discord.Embed(
@@ -161,12 +164,12 @@ async def assign(interaction: discord.Interaction, member: discord.Member, paper
         if interaction.user.id == CARLOS_ID:
             paper = client.data.get_paper(paper_id)
 
-            client.data.assign_reading(paper['url'], member.id)
+            client.data.assign_paper(paper['url'], member.id)
             client.data.commit()
             await interaction.response.send_message(f"{member.mention}, you've been assigned the following reading: [{paper['title']}]({paper['url']})")
         else:
             await interaction.response.send_message(":x: Sorry, but only Carlos can use this command.", ephemeral=True, delete_after=10)
-    except ReadingNotFoundError:
+    except PaperNotFoundError:
         await interaction.response.send_message(":question: The Paper ID was not found in the system.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
         await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
@@ -183,12 +186,12 @@ async def claim(interaction: discord.Interaction, paper_id: int):
         if OJOS_TEAM_ID in [x.id for x in interaction.user.roles]:
             paper = client.data.get_paper(paper_id)
 
-            client.data.assign_reading(paper['url'], interaction.user.id)
+            client.data.assign_paper(paper['url'], interaction.user.id)
             client.data.commit()
             await interaction.response.send_message(f"{interaction.user.mention}, you've been assigned the following reading: [{paper['title']}]({paper['url']})")
         else:
             await interaction.response.send_message(":x: Sorry, but you're not authorized to use this command.", ephemeral=True, delete_after=10)
-    except ReadingNotFoundError:
+    except PaperNotFoundError:
         await interaction.response.send_message(":question: The Paper ID was not found in the system.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
         await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)

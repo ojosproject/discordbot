@@ -9,15 +9,15 @@ The JSON file will look like this:
 
 ```json
 {
-    "research": [],
+    "papers": [],
     "team": []
 }
 ```
 
-## `readings` key
+## `papers` key
 
-The JSON file includes a `readings` key that will return an array. The array
-returns a `reading` object with the following keys:
+The JSON file includes a `papers` key that will return an array. The array
+returns a `paper` object with the following keys:
 
 ```json
 {
@@ -35,7 +35,7 @@ Details:
 
 |Key|Default|Description|
 |---|---|---|
-|`id`|`time.time()` result|An ID for the website, based on `time.time()`|
+|`id`|`len(papers)`|An ID for the website|
 |`title`|Title of the article|The title of the document we are researching.|
 |`url`|Link of the article|The URL where we can get a copy of the document. Internal Google Drive link works too!|
 |`assigned_to`|`0`|The Discord ID of the individual in charge of reading.|
@@ -45,7 +45,10 @@ Details:
 
 ## `team` key
 
-This returns an array of `team` object, representing a team member. The object looks like:
+This returns an array of `team` object, representing a team member. This
+information is kept for
+[committing purposes](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity).
+The object looks like:
 
 ```json
 {
