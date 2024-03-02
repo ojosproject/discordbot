@@ -111,7 +111,7 @@ async def list_papers(interaction: discord.Interaction):
             description="These are the research papers for the Research team."
         )
 
-        for paper in data['readings']:
+        for paper in data['papers']:
             embed.add_field(
                 name="Title",
                 value=f"[{paper['title'][:35]}... (#{paper['id']})]({paper['url']})",
