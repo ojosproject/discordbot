@@ -4,6 +4,7 @@
 # Helps manage data for the bot.
 # The file that contains the data must be in JSON format.
 import json
+import time
 from pathlib import Path
 
 class FileNotAvailableError(Exception):
@@ -18,11 +19,11 @@ class Data:
             raise FileNotAvailableError("Data.__init__: The file was not found on the server.")
     
         self._file: Path = Path(file)
-        self._content = json.load(self._file)
+        self._content = json.loads(self._file.read_text())
 
     def commit(self) -> None:
         with open(self._file, 'w+') as f:
-            f.write(json.dumps(self._content))
+            f.write(json.dumps(self._content, indent=4))
 
     def _readings_already_included(self, url: str) -> int:
         for index, reading in enumerate(self._content['readings']):
@@ -34,9 +35,15 @@ class Data:
         assert self._readings_already_included(url) == -1, 'Data.add_reading: The reading is already included.'
 
         self._content['readings'].append(
-            {'title': title,
-             'url': url,
-             'assigned_to': None}
+            {
+                "id": time.time(),
+                "title": title,
+                "url": url,
+                "assigned_to": 0,
+                "notes": "",
+                "summary": "",
+                "submitted": False
+            }
         )
 
     def assign_reading(self, url: str, user_id: int | None) -> None:
@@ -45,11 +52,40 @@ class Data:
         if reading_index == -1:
             raise Exception("Reading does not exist.")
 
-        reading = self._content[reading_index]
-        self._content['readings'].pop(reading_index)
-        # add the new version
-        self._content['readings'].append({
-            'title': reading['title'],
-            'url': reading['url'],
-            'assigned_to': user_id
+        self._content['readings'][reading_index].update({
+            "assigned_to": user_id
         })
+
+    def add_notes_and_summary(self, url, notes, summary) -> None:
+        reading_index = self._readings_already_included(url)
+
+        if reading_index == -1:
+            raise Exception("Reading does not exist.")
+
+        assert self._content['readings'][reading_index]['assigned_to'] != 0, 'Data.add_notes_and_summary: Cannot add content without assigned user.'
+        
+        self._content['readings'][reading_index].update({
+            "notes": notes,
+            "summary": summary
+        })
+
+    def git(self, url) -> None:
+        reading_index = self._readings_already_included(url)
+
+        data = self._content['readings'][reading_index]
+        author_data = list(filter(lambda team_member: team_member['id'] == data['assigned_to'], self._content['team']))[0]
+
+        assert data['notes'] != "" and data['summary'] != "", "Cannot commit without both notes and summary."
+
+        data['submitted'] = True
+        self.commit()
+
+        with open("src/templates/git_template.txt", "r") as f:
+            template = f.read()
+
+        with open(f"{data['id']}.txt", 'w+') as f:
+            f.write(template
+                    .replace("{TITLE}", data["title"])
+                    .replace("{ID}", str(data['id']))
+                    .replace("{NAME}", author_data['name'])
+                    .replace("{EMAIL}", author_data['email']))

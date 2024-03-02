@@ -1,0 +1,13 @@
+---BEGIN COMMIT INSTRUCTIONS---
+git add teams/research/work/{ID}.md
+git commit --author "{NAME} <{EMAIL}>"
+---END COMMIT INSTRUCTIONS---
+
+---BEGIN COMMIT MESSAGE---
+feat(research/work): added new research
+
+Added notes for {TITLE}.
+
+
+Co-authored-by: Carlos Valdez <cvaldezh@uci.edu>
+---END COMMIT MESSAGE---
