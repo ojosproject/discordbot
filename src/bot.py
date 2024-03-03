@@ -148,7 +148,7 @@ async def list_papers(interaction: discord.Interaction):
                     inline=False
                 )
 
-                if len(embed_in_progress) > 6000:
+                if len(embed_in_progress) > 6000 or len(embed_in_progress.fields) > 25:
                     return old_embed
                 else:
                     return create_embed(embed_in_progress, papers_copy[1:])
@@ -165,7 +165,7 @@ async def list_papers(interaction: discord.Interaction):
         await interaction.response.send_message(content="", embeds=[embed], ephemeral=True)
 
     except discord.HTTPException as e:
-        print(e.with_traceback())
+        print(e.with_traceback(e.__traceback__))
         await interaction.response.send_message(":question: Sorry, I had an unexpected error...", ephemeral=True, delete_after=10)
 
 
