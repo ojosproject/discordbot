@@ -112,6 +112,9 @@ async def list_papers(interaction: discord.Interaction):
         )
 
         for paper in data['papers']:
+            if paper['published'] == True:
+                continue
+
             embed.add_field(
                 name="Title",
                 value=f"[{paper['title'][:35]}... (#{paper['id']})]({paper['url']})",
