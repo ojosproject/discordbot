@@ -106,48 +106,61 @@ async def list_papers(interaction: discord.Interaction):
     data = client.data.get_db()
 
     try:
-        embed = discord.Embed(
-            title="Research Papers",
-            description="These are the research papers for the Research team."
-        )
+        def create_embed(embed_in_progress: discord.Embed, papers_copy: list) -> discord.Embed:
+            # recursive function
+            if len(papers_copy) == 0:
+                return embed_in_progress
+            elif len(papers_copy) > 0:
+                old_embed = discord.Embed.from_dict(embed_in_progress.to_dict())
+                paper = papers_copy[0]
 
-        # Reverse so that newest papers are first
-        for paper in data['papers'].reverse():
-            if len(embed) > 6000:
-                break
-
-            embed.add_field(
+                # add embed stuff
+                embed_in_progress.add_field(
                 name="Title",
                 value=f"[{paper['title'][:35]}... (#{paper['id']})]({paper['url']})",
                 inline=True
-            )
+                )
 
-            assigned = "Nobody"
+                assigned = "Nobody"
 
-            if paper['assigned_to']:
-                assigned = interaction.guild.get_member(paper['assigned_to']).display_name
+                if paper['assigned_to']:
+                    assigned = interaction.guild.get_member(paper['assigned_to']).display_name
 
-            embed.add_field(
-                name="Assigned to",
-                value=assigned,
-                inline=True
-            )
+                embed_in_progress.add_field(
+                    name="Assigned to",
+                    value=assigned,
+                    inline=True
+                )
 
-            finished = ":x: No"
-            if paper['notes'] and paper['summary']:
-                finished = ":white_check_mark: Yes!"
+                finished = ":x: No"
+                if paper['notes'] and paper['summary']:
+                    finished = ":white_check_mark: Yes!"
 
-            embed.add_field(
-                name="Finished?",
-                value=finished,
-                inline=True
-            )
-            
-            embed.add_field(
-                name=" ",
-                value=" ",
-                inline=False
-            )
+                embed_in_progress.add_field(
+                    name="Finished?",
+                    value=finished,
+                    inline=True
+                )
+                
+                embed_in_progress.add_field(
+                    name=" ",
+                    value=" ",
+                    inline=False
+                )
+
+                if len(embed_in_progress) > 6000:
+                    return old_embed
+                else:
+                    return create_embed(embed_in_progress, papers_copy[1:])
+
+
+        embed = create_embed(
+            discord.Embed(
+                title="",
+                description=""
+            ),
+            list(reversed(data['papers']))
+        )
 
         await interaction.response.send_message(content="", embeds=[embed], ephemeral=True)
 
