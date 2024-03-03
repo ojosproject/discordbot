@@ -111,11 +111,11 @@ async def list_papers(interaction: discord.Interaction):
             if len(papers_copy) == 0:
                 return embed_in_progress
             elif len(papers_copy) > 0:
-                old_embed = discord.Embed.from_dict(embed_in_progress.to_dict())
+                new_embed = discord.Embed.from_dict(embed_in_progress.to_dict())
                 paper = papers_copy[0]
 
                 # add embed stuff
-                embed_in_progress.add_field(
+                new_embed.add_field(
                 name="Title",
                 value=f"[{paper['title'][:35]}... (#{paper['id']})]({paper['url']})",
                 inline=True
@@ -126,7 +126,7 @@ async def list_papers(interaction: discord.Interaction):
                 if paper['assigned_to']:
                     assigned = interaction.guild.get_member(paper['assigned_to']).display_name
 
-                embed_in_progress.add_field(
+                new_embed.add_field(
                     name="Assigned to",
                     value=assigned,
                     inline=True
@@ -136,26 +136,26 @@ async def list_papers(interaction: discord.Interaction):
                 if paper['notes'] and paper['summary']:
                     finished = ":white_check_mark: Yes!"
 
-                embed_in_progress.add_field(
+                new_embed.add_field(
                     name="Finished?",
                     value=finished,
                     inline=True
                 )
                 
-                embed_in_progress.add_field(
+                new_embed.add_field(
                     name=" ",
                     value=" ",
                     inline=False
                 )
 
-                if len(embed_in_progress) > 6000 or len(embed_in_progress.fields) > 25:
+                if len(new_embed) > 6000 or len(new_embed.fields) > 25:
                     print("Conditions bad, ending...")
-                    print(len(embed_in_progress.fields))
-                    return old_embed
+                    print(len(new_embed.fields))
+                    return embed_in_progress
                 else:
                     print("Coniditons OK, continuing...")
-                    print(len(embed_in_progress.fields))
-                    return create_embed(embed_in_progress, papers_copy[1:])
+                    print(len(new_embed.fields))
+                    return create_embed(new_embed, papers_copy[1:])
 
 
         embed = create_embed(
