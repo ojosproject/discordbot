@@ -149,9 +149,11 @@ async def list_papers(interaction: discord.Interaction):
                 )
 
                 if len(embed_in_progress) > 6000 or len(embed_in_progress.fields) > 25:
+                    print("Conditions bad, ending...")
                     print(len(embed_in_progress.fields))
                     return old_embed
                 else:
+                    print("Coniditons OK, continuing...")
                     print(len(embed_in_progress.fields))
                     return create_embed(embed_in_progress, papers_copy[1:])
 
