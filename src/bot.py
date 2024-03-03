@@ -96,7 +96,7 @@ async def add_paper(interaction: discord.Interaction, title: str, url: str):
     except DuplicatePaperError:
         await interaction.response.send_message(":x: Sorry, this article is already registered.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
-        await interaction.response.send_message(":question: Sorry, I had an unexpected error...")
+        await interaction.response.send_message(":question: Sorry, I had an unexpected error...", ephemeral=True, delete_after=10)
 
 
 @client.tree.command(name="list",
@@ -145,10 +145,10 @@ async def list_papers(interaction: discord.Interaction):
                 inline=False
             )
 
-        await interaction.response.send_message(content="", embeds=[embed])
+        await interaction.response.send_message(content="", embeds=[embed], ephemeral=True)
 
     except discord.HTTPException:
-        await interaction.response.send_message(":question: Sorry, I had an unexpected error...")
+        await interaction.response.send_message(":question: Sorry, I had an unexpected error...", ephemeral=True, delete_after=10)
 
 
 
@@ -172,7 +172,7 @@ async def assign(interaction: discord.Interaction, member: discord.Member, paper
     except PaperNotFoundError:
         await interaction.response.send_message(":question: The Paper ID was not found in the system.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
-        await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
+        await interaction.response.send_message("Sorry, I had an unexpected error. :/", ephemeral=True, delete_after=10)
 
 
 @client.tree.command(name="claim",
@@ -194,7 +194,7 @@ async def claim(interaction: discord.Interaction, paper_id: int):
     except PaperNotFoundError:
         await interaction.response.send_message(":question: The Paper ID was not found in the system.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
-        await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
+        await interaction.response.send_message("Sorry, I had an unexpected error. :/", ephemeral=True, delete_after=10)
 
 
 @client.tree.command(name="commit",
@@ -218,7 +218,7 @@ async def commit(interaction: discord.Interaction, paper_id: int):
     except MissingNotesError:
         await interaction.response.send_message(f":x: You need to add both notes and summary to make public.", ephemeral=True, delete_after=10)
     except discord.HTTPException:
-        await interaction.response.send_message("Sorry, I had an unexpected error. :/", delete_after=10)
+        await interaction.response.send_message("Sorry, I had an unexpected error. :/", ephemeral=True, delete_after=10)
 
 
 @client.tree.command(name="add_notes",
@@ -237,7 +237,7 @@ async def add_notes(interaction: discord.Interaction, paper_id: int):
                     description="Gives you the link to the docs website.",
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
 async def send_help(interaction: discord.Interaction):
-    await interaction.response.send_message("https://docs.ojosproject.org/teams/research/chalubot")
+    await interaction.response.send_message("https://docs.ojosproject.org/teams/research/chalubot", ephemeral=True)
 
 
 client.run(os.getenv("DISCORD_TOKEN"))
