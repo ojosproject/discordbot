@@ -112,7 +112,7 @@ async def list_papers(interaction: discord.Interaction):
         )
 
         for paper in data['papers']:
-            if paper['published'] == True:
+            if paper['submitted'] == True:
                 continue
 
             embed.add_field(
