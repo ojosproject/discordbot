@@ -164,7 +164,8 @@ async def list_papers(interaction: discord.Interaction):
 
         await interaction.response.send_message(content="", embeds=[embed], ephemeral=True)
 
-    except discord.HTTPException:
+    except discord.HTTPException as e:
+        print(e.with_traceback())
         await interaction.response.send_message(":question: Sorry, I had an unexpected error...", ephemeral=True, delete_after=10)
 
 
