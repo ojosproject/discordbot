@@ -111,9 +111,10 @@ async def list_papers(interaction: discord.Interaction):
             description="These are the research papers for the Research team."
         )
 
-        for paper in data['papers']:
-            if paper['published'] == True:
-                continue
+        # Reverse so that newest papers are first
+        for paper in data['papers'].reverse():
+            if len(embed) > 6000:
+                break
 
             embed.add_field(
                 name="Title",
