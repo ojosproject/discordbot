@@ -150,7 +150,7 @@ async def list_papers(interaction: discord.Interaction):
 
                 if len(new_embed) > 6000 or len(new_embed.fields) > 25:
                     print("Conditions bad, ending...")
-                    print(len(new_embed.fields))
+                    print(len(embed_in_progress.fields))
                     return embed_in_progress
                 else:
                     print("Coniditons OK, continuing...")
