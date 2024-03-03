@@ -111,7 +111,7 @@ async def list_papers(interaction: discord.Interaction):
             if len(papers_copy) == 0:
                 return embed_in_progress
             elif len(papers_copy) > 0:
-                new_embed = discord.Embed.from_dict(embed_in_progress.to_dict())
+                new_embed = discord.Embed.from_dict(dict(embed_in_progress.to_dict()))
                 paper = papers_copy[0]
 
                 # add embed stuff
