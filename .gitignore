@@ -5,3 +5,4 @@ data.json
 fake_data.json
 .coverage
 coverage.xml
+.venv

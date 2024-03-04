@@ -2,13 +2,16 @@
 # Carlos Valdez
 # 
 # Ensures that `python src/test_data.py` runs correctly.
-image: ubuntu
+
+# The program runs on a Fedora-based Linux distro, so should be tested on a
+# Fedora-based image.
+image: fedora:latest
 
 before_script:
-  - "apt-get update -y && apt-get install python3 python3-pip -y"
+  - "dnf upgrade -y && dnf install python3.12 pip -y"
 test:
   script:
-    - "pip3 install -r requirements.txt"
-    - "python3 src/test_data.py"
+    - "pip install -r requirements.txt"
+    - "python src/test_data.py"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
