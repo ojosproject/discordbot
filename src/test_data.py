@@ -63,7 +63,7 @@ class TestDataClass(unittest.TestCase):
     def test_git(self):
         self.d.add_paper('Welcome', 'https://ojosproject.org')
         self.d.assign_paper('https://ojosproject.org', 458773298961055758)
-        self.d.add_notes_and_summary('https://ojosproject.org', '# wowow', 'This is about Ojos Project dot org!')
+        self.d.add_notes_and_summary('https://ojosproject.org', '# wow', 'This is about Ojos Project dot org!')
 
         test_content = self.d._db['papers'][-1]
 
@@ -82,7 +82,7 @@ class TestDataClass(unittest.TestCase):
     def test_submit_be_true_after_git(self):
         self.d.add_paper('Welcome', 'https://ojosproject.org')
         self.d.assign_paper('https://ojosproject.org', 458773298961055758)
-        self.d.add_notes_and_summary('https://ojosproject.org', '# wowow', 'This is about Ojos Project dot org!')
+        self.d.add_notes_and_summary('https://ojosproject.org', '# wow', 'This is about Ojos Project dot org!')
 
         test_content = self.d._db['papers'][-1]
 
@@ -108,7 +108,7 @@ class TestDataClass(unittest.TestCase):
     def test_commit(self):
         self.d.add_paper('Welcome', 'https://ojosproject.org')
         self.d.assign_paper('https://ojosproject.org', 458773298961055758)
-        self.d.add_notes_and_summary('https://ojosproject.org', '# wowow', 'This is about Ojos Project dot org!')
+        self.d.add_notes_and_summary('https://ojosproject.org', '# wow', 'This is about Ojos Project dot org!')
         self.d.commit()
 
         test_content = self.d._db['papers'][-1]
@@ -123,7 +123,7 @@ class TestDataClass(unittest.TestCase):
                             'title': 'Welcome',
                             'url': 'https://ojosproject.org',
                             'assigned_to': 458773298961055758,
-                            'notes': '# wowow',
+                            'notes': '# wow',
                             'summary': 'This is about Ojos Project dot org!',
                             'submitted': False,
                         }

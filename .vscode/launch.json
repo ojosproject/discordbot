@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Run",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "./src/bot.py",
             "console": "integratedTerminal",
