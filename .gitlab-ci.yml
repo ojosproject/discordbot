@@ -8,10 +8,10 @@
 image: fedora:latest
 
 before_script:
-  - "dnf upgrade -y && dnf install python3.12 pip -y"
+  - "sudo dnf upgrade -y && sudo dnf install python3.12 pip -y"
 test:
   script:
     - "pip install -r requirements.txt"
-    - "python src/test_data.py"
+    - "python3 src/test_data.py"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
