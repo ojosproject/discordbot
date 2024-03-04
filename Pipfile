@@ -15,4 +15,5 @@ python_version = "3.11"
 
 [scripts]
 start = "python src/bot.py"
-tests = "python src/test_data.py"
+tests = "coverage run -m pytest"
+coverage = "coverage xml"

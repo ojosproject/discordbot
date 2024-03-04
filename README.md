@@ -45,7 +45,7 @@ pipenv run start
 We use `pytest` and `coverage` to test this module. To properly test it, use:
 
 ```shell
-coverage run -m pytest; coverage xml
+pipenv run tests; pipenv run coverage
 ```
 
 This creates two files: `.coverage` and `coverage.xml`. Use the
