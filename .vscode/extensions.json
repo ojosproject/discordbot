@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "njpwerner.autodocstring",
-        "aaron-bond.better-comments"
+        "aaron-bond.better-comments",
+        "ryanluker.vscode-coverage-gutters",
+        "ms-vscode.live-server" // Coverage Gutters depends on this extension
     ]
 }

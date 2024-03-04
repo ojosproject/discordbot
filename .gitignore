@@ -3,3 +3,5 @@ __pycache__
 .DS_Store
 data.json
 fake_data.json
+.coverage
+coverage.xml

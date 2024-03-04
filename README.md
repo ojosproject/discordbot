@@ -22,3 +22,16 @@ echo 'DISCORD_TOKEN="<DISCORD TOKEN FROM WEBSITE>"' >> .env
 
 Finally, you can run this bot by running the
 [VS Code debugger](https://code.visualstudio.com/Docs/editor/debugging).
+
+### Running Tests
+
+We use `pytest` and `coverage` to test this module. To properly test it, use:
+
+```shell
+coverage run -m pytest; coverage xml
+```
+
+This creates two files: `.coverage` and `coverage.xml`. Use the
+[Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters)
+extension to see if the tests ran, and the coverage it's covered. Read more with
+the Coverage Gutters documentation.
