@@ -8,7 +8,7 @@
 image: fedora:latest
 
 before_script:
-  - "sudo dnf upgrade -y && sudo dnf install python3.12 pip -y"
+  - "sudo dnf upgrade -y && sudo dnf install python3.12 pip gpg -y"
 test:
   script:
     - "pip install -r requirements.txt"

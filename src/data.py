@@ -4,7 +4,8 @@
 # Helps manage data for the bot.
 # The file that contains the data must be in JSON format.
 import json
-import time
+import gnupg
+import os
 from pathlib import Path
 
 class FileNotAvailableError(Exception):
@@ -168,6 +169,18 @@ class Data:
             dict: A copy of the data.
         """
         return dict(self._db)
+    
+    def save_db_to_drive(self) -> str:
+        gpg = gnupg.GPG()
+        gpg.encrypt_file(
+            "data.json",
+            recipients="Carlos",
+            passphrase=os.getenv("GPG_PASSPHRASE"),
+            symmetric=True,
+            output=f"{str(self._file)}.gpg"
+        )
+
+        return f"{str(self._file)}.gpg"
     
     def get_paper(self, paper_id: int) -> dict:
         for paper in self._db['papers']:
