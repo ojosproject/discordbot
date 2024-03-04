@@ -5,7 +5,7 @@
 image: ubuntu
 
 before_script:
-  - "apt-get update -y; apt-get install python3 python3-pip -y; pip3 install pipenv"
+  - "apt-get update -y; apt-get install python3.12 python3-pip -y; pip3 install pipenv"
 test:
   script:
     - "pipenv install"
