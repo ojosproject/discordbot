@@ -4,6 +4,7 @@
 # A Discord bot designed to help organize the Research team.
 import discord
 import os
+import gnupg
 from data import Data, DuplicatePaperError, MissingNotesError, PaperNotFoundError
 from discord import app_commands
 from pathlib import Path
@@ -103,7 +104,7 @@ async def add_paper(interaction: discord.Interaction, title: str, url: str):
                     description="View all the research papers we've looked into so far.",
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
 async def list_papers(interaction: discord.Interaction):
-    data = client.data.get_db()
+    data = client.data.get_db(encrypted=False)
 
     try:
         embed = discord.Embed(
@@ -241,6 +242,33 @@ async def add_notes(interaction: discord.Interaction, paper_id: int):
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
 async def send_help(interaction: discord.Interaction):
     await interaction.response.send_message("https://docs.ojosproject.org/teams/research/chalubot", ephemeral=True)
+
+
+@client.tree.command(name="datafile",
+                    description="Get the database file through a Discord DM.",
+                    guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
+async def datafile(interaction: discord.Interaction):
+    if interaction.user.id == CARLOS_ID:
+        file_path = client.data.save_db_to_drive()
+
+        await interaction.user.send(
+            content="NOTICE: THIS IS PRIVATE INFORMATION, AND SHOULD BE TREATED AS SUCH.\n\nHere's the requested `data.json` file:",
+            file=discord.File(file_path),
+            delete_after=10
+        )
+
+        os.remove(file_path)
+
+        await interaction.response.send_message(":white_check_mark: Operation succeeded.", ephemeral=True, delete_after=10)
+
+    else:
+        await interaction.response.send_message(":x: This command can only be used by Carlos."\
+                                                "\n\n__Curious about how the command works?__\n"\
+                                                "This command sends Carlos a private `data.json` file. It contains "\
+                                                "all of the research information we have. It is encrypted with "\
+                                                "[GPG](https://en.wikipedia.org/wiki/GNU_Privacy_Guard),"\
+                                                " so you don't have to worry about your data being stolen.",
+                                                ephemeral=True)
 
 
 client.run(os.getenv("DISCORD_TOKEN"))

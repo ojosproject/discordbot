@@ -4,7 +4,8 @@
 # Helps manage data for the bot.
 # The file that contains the data must be in JSON format.
 import json
-import time
+import gnupg
+import os
 from pathlib import Path
 
 class FileNotAvailableError(Exception):
@@ -149,17 +150,14 @@ class Data:
             raise MissingNotesError("Cannot commit without both notes and summary.")
 
         data['submitted'] = True
+
+        self._db['commits'][str(data['id'])] = {
+            "add": f"teams/research/work/{data['id']}.md",
+            "message": f"feat(research/work): added new research\n\nAdded notes for {data['title']}",
+            "author": f"{author_data['name']} <{author_data['email']}>",
+        }
+
         self.commit()
-
-        with open("src/templates/git_template.txt", "r") as f:
-            template = f.read()
-
-        with open(f"{data['id']}.txt", 'w+') as f:
-            f.write(template
-                    .replace("{TITLE}", data["title"])
-                    .replace("{ID}", str(data['id']))
-                    .replace("{NAME}", author_data['name'])
-                    .replace("{EMAIL}", author_data['email']))
             
     def get_db(self) -> dict:
         """Returns a copy of the data.
@@ -168,6 +166,18 @@ class Data:
             dict: A copy of the data.
         """
         return dict(self._db)
+    
+    def save_db_to_drive(self) -> str:
+        gpg = gnupg.GPG()
+        gpg.encrypt_file(
+            "data.json",
+            recipients="Carlos",
+            passphrase=os.getenv("GPG_PASSPHRASE"),
+            symmetric=True,
+            output=f"{str(self._file)}.gpg"
+        )
+
+        return f"{str(self._file)}.gpg"
     
     def get_paper(self, paper_id: int) -> dict:
         for paper in self._db['papers']:
