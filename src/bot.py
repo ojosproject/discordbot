@@ -104,7 +104,7 @@ async def add_paper(interaction: discord.Interaction, title: str, url: str):
                     description="View all the research papers we've looked into so far.",
                     guilds=[discord.Object(id=server_id) for server_id in SERVER_WHITELIST])
 async def list_papers(interaction: discord.Interaction):
-    data = client.data.get_db(encrypted=False)
+    data = client.data.get_db()
 
     try:
         embed = discord.Embed(
