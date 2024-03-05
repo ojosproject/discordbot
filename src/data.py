@@ -150,17 +150,14 @@ class Data:
             raise MissingNotesError("Cannot commit without both notes and summary.")
 
         data['submitted'] = True
+
+        self._db['commits'][str(data['id'])] = {
+            "add": f"teams/research/work/{data['id']}.md",
+            "message": f"feat(research/work): added new research\n\nAdded notes for {data['title']}",
+            "author": f"{author_data['name']} <{author_data['email']}>",
+        }
+
         self.commit()
-
-        with open("src/templates/git_template.txt", "r") as f:
-            template = f.read()
-
-        with open(f"{data['id']}.txt", 'w+') as f:
-            f.write(template
-                    .replace("{TITLE}", data["title"])
-                    .replace("{ID}", str(data['id']))
-                    .replace("{NAME}", author_data['name'])
-                    .replace("{EMAIL}", author_data['email']))
             
     def get_db(self) -> dict:
         """Returns a copy of the data.

@@ -17,7 +17,8 @@ class TestDataClass(unittest.TestCase):
                                 "name": "Carlos Valdez",
                                 "email": "cvaldezh@uci.edu"
                             }
-                        ]
+                        ],
+                        "commits": {}
                     }
                 )
             )
@@ -65,18 +66,21 @@ class TestDataClass(unittest.TestCase):
         self.d.assign_paper('https://ojosproject.org', 458773298961055758)
         self.d.add_notes_and_summary('https://ojosproject.org', '# wow', 'This is about Ojos Project dot org!')
 
-        test_content = self.d._db['papers'][-1]
-
         self.d.git('https://ojosproject.org')
 
-        with open(f"{test_content['id']}.txt", 'r') as f:
-            self.assertEqual(
-                f"---BEGIN COMMIT INSTRUCTIONS---\ngit add docs/teams/research/work/{test_content['id']}.md\ngit commit --author \"Carlos Valdez <cvaldezh@uci.edu>\"\n---END COMMIT INSTRUCTIONS---\n\n---BEGIN COMMIT MESSAGE---\nfeat(research/work): added new research\n\nAdded notes for {test_content['title']}.\n\n---END COMMIT MESSAGE---\n",
-                f.read()
-            )
-        
-        os.remove(f"{test_content['id']}.txt")
+        commit_key = list(self.d._db['commits'].keys())[-1]
+        commit = self.d._db['commits'][commit_key]
+
+        self.assertEqual(
+            (f"teams/research/work/0.md",
+            f"feat(research/work): added new research\n\nAdded notes for Welcome",
+            "Carlos Valdez <cvaldezh@uci.edu>"),
+            (commit['add'], commit['message'],
+            commit['author'])
+        )
+
         del self.d._db['papers'][-1]
+        del self.d._db['commits'][commit_key]
         self.d.commit()
 
     def test_submit_be_true_after_git(self):
@@ -89,8 +93,6 @@ class TestDataClass(unittest.TestCase):
         self.d.git('https://ojosproject.org')
 
         self.assertTrue(test_content['submitted'])
-
-        os.remove(f"{test_content['id']}.txt")
         del self.d._db['papers'][-1]
         self.d.commit()
 
@@ -134,7 +136,8 @@ class TestDataClass(unittest.TestCase):
                             "name": "Carlos Valdez",
                             "email": "cvaldezh@uci.edu"
                         }
-                    ]
+                    ],
+                    "commits": {}
                 }
             )
 
