@@ -18,6 +18,7 @@ command:
 
 ```shell
 echo 'DISCORD_TOKEN="<DISCORD TOKEN FROM WEBSITE>"' >> .env
+echo GPG_PASSPHRASE="<PRIVATE PGP KEY>" >> .env
 ```
 
 Finally, you can run this bot by running the
