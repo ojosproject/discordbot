@@ -6,3 +6,4 @@ fake_data.json
 .coverage
 coverage.xml
 .venv
+data.json.gpg
