@@ -4,7 +4,7 @@
 # A Discord bot designed to help organize the Research team.
 import discord
 import os
-import gnupg
+from ResearchEmbed import ResearchEmbed
 from data import Data, DuplicatePaperError, MissingNotesError, PaperNotFoundError
 from discord import app_commands
 from pathlib import Path
@@ -107,49 +107,7 @@ async def list_papers(interaction: discord.Interaction):
     data = client.data.get_db()
 
     try:
-        embed = discord.Embed(
-            title="Research Papers",
-            description="These are the research papers for the Research team."
-        )
-
-        for paper in data['papers']:
-            if paper['submitted'] == True:
-                continue
-
-            embed.add_field(
-                name="Title",
-                value=f"[{paper['title'][:35]}... (#{paper['id']})]({paper['url']})",
-                inline=True
-            )
-
-            assigned = "Nobody"
-
-            if paper['assigned_to']:
-                assigned = interaction.guild.get_member(paper['assigned_to']).display_name
-
-            embed.add_field(
-                name="Assigned to",
-                value=assigned,
-                inline=True
-            )
-
-            finished = ":x: No"
-            if paper['notes'] and paper['summary']:
-                finished = ":white_check_mark: Yes!"
-
-            embed.add_field(
-                name="Finished?",
-                value=finished,
-                inline=True
-            )
-            
-            embed.add_field(
-                name=" ",
-                value=" ",
-                inline=False
-            )
-
-        await interaction.response.send_message(content="", embeds=[embed], ephemeral=True)
+        await interaction.response.send_message(content="", embeds=[ResearchEmbed(data['papers']).discord_embed()], ephemeral=True)
 
     except discord.HTTPException:
         await interaction.response.send_message(":question: Sorry, I had an unexpected error...", ephemeral=True, delete_after=10)
